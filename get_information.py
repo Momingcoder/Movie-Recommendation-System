@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
 __author__ = 'Moming'
 
 import urllib
@@ -5,6 +7,7 @@ from bs4 import BeautifulSoup as BS
 import re
 import requests
 import os
+import cPickle
 
 class Movie(object):
     __title = []
@@ -22,7 +25,7 @@ class Movie(object):
     def __init__(self, Title, Url, Img, Star, Director, Starring, Reviews, Quote, Label):
         self.__title = Title
         self.__url = Url # extract
-        self.__img = download_img(Img) # download
+        self.__img = __download_img(Img) # download
 
         self.__star = Star
 
@@ -38,7 +41,7 @@ class Movie(object):
         self.__year = int(Label[0])
         self.__label = Label[2].split(' ')
 
-    def download_img(self, url):
+    def __download_img(self, url):
         if not os.path.isdir('./images'):
             os.mkdir('./images')
 
@@ -101,3 +104,9 @@ for i in range(10):
         douban_movie = Movie(title, url, img, star, director, starring, reviews, quote, label)
 
         MovieTable.append(douban_movie)
+
+if not os.path.isdir('./Movies'):
+    os.mkdir('./Movies')
+
+store_path = './Movies/movie_table.pkl'
+cPickle.dump(MovieTable, open(store_path, 'w'))
