@@ -9,7 +9,7 @@ class Movie(object):
     __title = []
     __url = ''
     __img = ''
-    __score = 0
+    __star = 0
     __director = []
     __starring = []
     __reviews = 0
@@ -18,11 +18,11 @@ class Movie(object):
     __year = 1970
     __nation = ''
     
-    def __init__(self, Title, Url, Img, Score, Director, Starring, Reviews, Quote, Label):
+    def __init__(self, Title, Url, Img, Star, Director, Starring, Reviews, Quote, Label):
         self.__title = Title
         self.__url = Url # extract
         self.__img = Img # download
-        self.__score = Score
+        self.__star = Star
         self.__director = Director
         self.__starring = Starring
         self.__reviews = Reviews
@@ -68,5 +68,13 @@ for i in range(10):
             except StopIteration:
                 break
 
+        star_span = bd.find('span', {'class': 'rating_num'})
+        star = float(star_span.string)
+        reviews_span = star_span.next_sibling.next_sibling.next_sibling.next_sibling
+        reviews = int(re.findall(r'(\d{1,10})', reviews_span.string)[0])
+
+        quote = bd.find('span', {'class': 'inq'}).string
+
         
+
 
