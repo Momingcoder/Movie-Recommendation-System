@@ -13,6 +13,7 @@ class Movie(object):
     __title = []
     __url = ''
     __img = ''
+    __img_path = ''
     __star = 0
     __director = []
     __starring = []
@@ -25,7 +26,8 @@ class Movie(object):
     def __init__(self, Title, Url, Img, Star, Director, Starring, Reviews, Quote, Label):
         self.__title = Title
         self.__url = Url # extract
-        self.__img = __download_img(Img) # download
+        self.__img = Img
+        self.__img_path = self.__download_img(Img) # download
 
         self.__star = Star
 
@@ -37,22 +39,28 @@ class Movie(object):
         self.__reviews = Reviews
         self.__quote = Quote
 
+        self.__year = int(re.findall(r'(\d{1,8})', Label[0])[0])
         self.__nation = Label[1]
-        self.__year = int(Label[0])
         self.__label = Label[2].split(' ')
+
 
     def __download_img(self, url):
         if not os.path.isdir('./images'):
             os.mkdir('./images')
 
         path = './images/' + url.split('/')[-1]
+        if os.path.isfile(path):
+            return path
+
         fw = open(path, 'wb')
         fw.write(requests.get(url).content)
         fw.close()
         return path
 
+
     def get_title(self):
         return self.__title
+
 
 
 MovieTable = []
@@ -99,7 +107,10 @@ for i in range(10):
         reviews_span = star_span.next_sibling.next_sibling.next_sibling.next_sibling
         reviews = int(re.findall(r'(\d{1,10})', reviews_span.string)[0])
 
-        quote = bd.find('span', {'class': 'inq'}).string
+        if bd.find('span', {'class': 'inq'}) == None:
+            quote = ''
+        else:
+            quote = bd.find('span', {'class': 'inq'}).string
 
         douban_movie = Movie(title, url, img, star, director, starring, reviews, quote, label)
 
