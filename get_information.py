@@ -4,6 +4,7 @@ import urllib
 from bs4 import BeautifulSoup as BS
 import re
 import requests
+import os
 
 class Movie(object):
     __title = []
@@ -17,27 +18,46 @@ class Movie(object):
     __label = []
     __year = 1970
     __nation = ''
-    
+
     def __init__(self, Title, Url, Img, Star, Director, Starring, Reviews, Quote, Label):
         self.__title = Title
         self.__url = Url # extract
-        self.__img = Img # download
+        self.__img = download_img(Img) # download
+
         self.__star = Star
-        self.__director = Director
+
+        directors = re.findall(r': (.+)', Director)[0]
+        for d in directors.split('/'):
+            self.__director.append(d.strip())
+
         self.__starring = Starring
         self.__reviews = Reviews
         self.__quote = Quote
-        self.__label = Label # year nation
+
+        self.__nation = Label[1]
+        self.__year = int(Label[0])
+        self.__label = Label[2].split(' ')
+
+    def download_img(self, url):
+        if not os.path.isdir('./images'):
+            os.mkdir('./images')
+
+        path = './images/' + url.split('/')[-1]
+        fw = open(path, 'wb')
+        fw.write(requests.get(url).content)
+        fw.close()
+        return path
 
     def get_title(self):
         return self.__title
 
 
+MovieTable = []
 
 for i in range(10):
     url = 'https://movie.douban.com/top250?start=' + str(i * 25) + '&filter='
     html = urllib.urlopen(url).read()
-    soup = BS(html)
+    soup = BS(html, 'html.parser')
     movie_divs = soup.findAll('div', {"class": "item"})
     for movie_div in movie_divs:
         img = movie_div.img.attrs['src']
@@ -56,6 +76,9 @@ for i in range(10):
         bd = movie_div.findAll('div', {'class': 'bd'})[0]
         info = bd.findAll('p', {'class': ''})[0].strings
         flag = True
+        director = ''
+        starring = ''
+        label = []
         while True:
             try:
                 cmd = info.next().replace(u'\xa0', '\t').strip()
@@ -75,6 +98,6 @@ for i in range(10):
 
         quote = bd.find('span', {'class': 'inq'}).string
 
-        
+        douban_movie = Movie(title, url, img, star, director, starring, reviews, quote, label)
 
-
+        MovieTable.append(douban_movie)
