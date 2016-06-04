@@ -35,11 +35,20 @@ class Movie(object):
 
         self.__star = Star
 
-        directors = re.findall(r': (.+)', Director)[0]
-        for d in directors.split('/'):
-            self.__director.append(d.strip())
+        if re.findall(r': (.+)', Director) == []:
+            self.__director = ['']
+        else:
+            directors = re.findall(r': (.+)', Director)[0]
+            for d in directors.split('/'):
+                self.__director.append(d.strip())
 
-        self.__starring = Starring
+        if re.findall(r': (.+)', Starring) == []:
+            self.__starring = ['']
+        else:
+            starrings = re.findall(r': (.+)', Starring)[0]
+            for s in starrings.split('/'):
+                self.__starring.append(s.strip())
+
         self.__reviews = Reviews
         self.__quote = Quote
 
@@ -65,7 +74,7 @@ class Movie(object):
 
     def print_movie_info(self):
         print 'No.', self.__order
-        print 'Title:'
+        print 'Title:',
         for t in self.__title:
             print t, '/',
         print '\n', 'Director:',
