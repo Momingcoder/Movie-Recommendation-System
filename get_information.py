@@ -9,6 +9,7 @@ import requests
 import os
 import cPickle
 import numpy
+import random
 
 class Movie(object):
     __order = 0
@@ -46,7 +47,6 @@ class Movie(object):
         self.__nation = Label[1]
         self.__label = Label[2].split(' ')
 
-
     def __download_img(self, url):
         """
         download the images (if i need a GUI)
@@ -63,6 +63,18 @@ class Movie(object):
         fw.close()
         return path
 
+    def print_movie_info(self):
+        print 'No.', self.__order
+        print 'Title:'
+        for t in self.__title:
+            print t, '/',
+        print '\n', 'Director:',
+        for d in self.__director:
+            print d, '/',
+        print '\n', 'Starring:',
+        for s in self.__starring:
+            print s, '/',
+        print '\n', url
 
     def get_order(self):
         return self.__order
@@ -189,3 +201,43 @@ for i in range(250):
 
 cosine_similarity += cosine_similarity.T
 
+"""
+print the movie
+"""
+def print_n_movies(n):
+    """
+    print n random movies
+    """
+    n_rand = []
+    while len(n_rand) < n:
+        rand = random.randint(0, 249)
+        if rand not in n_rand:
+            n_rand.append(rand)
+
+    """
+    TODO: output = c * input ** gamma
+    """
+    for i in n_rand:
+        MovieTable[i].print_movie_info()
+
+"""
+get the similar movies
+"""
+def get_n_movies(order, n):
+    """
+    return n movies that are similar to No.order
+    """
+
+
+"""
+give some advice
+"""
+print 'Here is the Movie Recommendation System based on Douban Top250.'
+print 'Let me give you some movies.'
+print_n_movies(5)
+n = input('Which one you like best?\n>>')
+print 'Let me give you some similar movies you may like to watch.'
+recommendation = []
+recommendation.extend(get_n_movies(n, 5))
+for i in recommendation:
+    MovieTable[i].print_movie_info()
