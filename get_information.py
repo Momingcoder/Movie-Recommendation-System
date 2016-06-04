@@ -227,7 +227,9 @@ def get_n_movies(order, n):
     """
     return n movies that are similar to No.order
     """
-
+    I = list(numpy.argsort(cosine_similarity[order, :]))
+    I.reverse()
+    return I[:n]
 
 """
 give some advice
@@ -235,7 +237,7 @@ give some advice
 print 'Here is the Movie Recommendation System based on Douban Top250.'
 print 'Let me give you some movies.'
 print_n_movies(5)
-n = input('Which one you like best?\n>>')
+n = input('Which one you like best? Please input the No.\n>>')
 print 'Let me give you some similar movies you may like to watch.'
 recommendation = []
 recommendation.extend(get_n_movies(n, 5))
