@@ -8,8 +8,10 @@ import re
 import requests
 import os
 import cPickle
+import numpy
 
 class Movie(object):
+    __order = 0
     __title = []
     __url = ''
     __img = ''
@@ -23,7 +25,8 @@ class Movie(object):
     __year = 1970
     __nation = ''
 
-    def __init__(self, Title, Url, Img, Star, Director, Starring, Reviews, Quote, Label):
+    def __init__(self, Order, Title, Url, Img, Star, Director, Starring, Reviews, Quote, Label):
+        self.__order = Order
         self.__title = Title
         self.__url = Url # extract
         self.__img = Img
@@ -45,6 +48,9 @@ class Movie(object):
 
 
     def __download_img(self, url):
+        """
+        download the images (if i need a GUI)
+        """
         if not os.path.isdir('./images'):
             os.mkdir('./images')
 
@@ -57,6 +63,9 @@ class Movie(object):
         fw.close()
         return path
 
+
+    def get_order(self):
+        return self.__order
 
     def get_title(self):
         return self.__title
@@ -89,14 +98,22 @@ class Movie(object):
         return self.__quote
 
 
-
+"""
+get movies' information
+"""
 MovieTable = []
-
+LabelTable = []
+order = 0
 for i in range(10):
     url = 'https://movie.douban.com/top250?start=' + str(i * 25) + '&filter='
-    html = urllib.urlopen(url).read()
+    try:
+        html = urllib.urlopen(url).read()
+    except:
+        print('cannot get the html.')
+        break
     soup = BS(html, 'html.parser')
     movie_divs = soup.findAll('div', {"class": "item"})
+
     for movie_div in movie_divs:
         img = movie_div.img.attrs['src']
 
@@ -139,12 +156,36 @@ for i in range(10):
         else:
             quote = bd.find('span', {'class': 'inq'}).string
 
-        douban_movie = Movie(title, url, img, star, director, starring, reviews, quote, label)
-
+        douban_movie = Movie(order, title, url, img, star, director, starring, reviews, quote, label)
+        order += 1
         MovieTable.append(douban_movie)
+        LabelTable.append(label)
 
 if not os.path.isdir('./Movies'):
     os.mkdir('./Movies')
 
 store_path = './Movies/movie_table.pkl'
 cPickle.dump(MovieTable, open(store_path, 'w'))
+
+
+"""
+compute the cosine similarity
+"""
+def get_cosine_similarity(x, y):
+    if len(x) == 0 or len(y) == 0:
+        return 0
+
+    similarity = 0
+    for i in x:
+        if i in y:
+            similarity += 1
+
+    return similarity / float((len(x) ** 0.5) * (len(y) ** 0.5))
+
+cosine_similarity = numpy.zeros((250, 250))
+for i in range(250):
+    for j in range(i, 250):
+        cosine_similarity[i, j] = get_cosine_similarity(LabelTable[i], LabelTable[j])
+
+cosine_similarity += cosine_similarity.T
+
