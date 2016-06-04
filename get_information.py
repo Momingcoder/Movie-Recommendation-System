@@ -61,6 +61,33 @@ class Movie(object):
     def get_title(self):
         return self.__title
 
+    def get_url(self):
+        return self.__url
+
+    def get_star(self):
+        return self.__star
+
+    def get_director(self):
+        return self.__director
+
+    def get_starring(self):
+        return self.__starring
+
+    def get_label(self):
+        return self.__label
+
+    def get_year(self):
+        return self.__year
+
+    def get_nation(self):
+        return self.__nation
+
+    def get_reviews(self):
+        return self.__reviews
+
+    def get_quote(self):
+        return self.__quote
+
 
 
 MovieTable = []
