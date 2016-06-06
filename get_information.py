@@ -39,19 +39,19 @@ class Movie(object):
             self.__director = ['']
         else:
             directors = re.findall(r': (.+)', Director)[0]
-			temp = []
+            temp = []
             for d in directors.split('/'):
                 temp.append(d.strip())
-			self.__director = temp
+            self.__director = temp
 			
         if re.findall(r': (.+)', Starring) == []:
             self.__starring = ['']
         else:
             starrings = re.findall(r': (.+)', Starring)[0]
-			temp = []
+            temp = []
             for s in starrings.split('/'):
                 temp.append(s.strip())
-			self.__starring = temp
+            self.__starring = temp
 
         self.__reviews = Reviews
         self.__quote = Quote
@@ -76,18 +76,25 @@ class Movie(object):
         fw.close()
         return path
 
+    def print_list(self, l):
+        if len(l) == 0:
+            print ''
+        elif len(l) == 1:
+            print l[0]
+        else:
+            for i in l[:-1]:
+                print i, '/',
+            print l[-1]
+
     def print_movie_info(self):
         print 'No.', self.__order
         print 'Title:',
-        for t in self.__title:
-            print t, '/',
-        print '\n', 'Director:',
-        for d in self.__director:
-            print d, '/',
-        print '\n', 'Starring:',
-        for s in self.__starring:
-            print s, '/',
-        print '\n', url
+        self.print_list(self.__title)
+        print 'Director:',
+        self.print_list(self.__director)
+        print 'Starring:',
+        self.print_list(self.__starring)
+        print url
 
     def get_order(self):
         return self.__order
@@ -130,6 +137,7 @@ MovieTable = []
 LabelTable = []
 order = 0
 for i in range(10):
+    order += 1
     url = 'https://movie.douban.com/top250?start=' + str(i * 25) + '&filter='
     try:
         html = urllib.urlopen(url).read()
@@ -182,7 +190,6 @@ for i in range(10):
             quote = bd.find('span', {'class': 'inq'}).string
 
         douban_movie = Movie(order, title, url, img, star, director, starring, reviews, quote, label)
-        order += 1
         MovieTable.append(douban_movie)
         LabelTable.append(label)
 
@@ -242,7 +249,7 @@ def get_n_movies(order, n):
     """
     I = list(numpy.argsort(cosine_similarity[order, :]))
     I.reverse()
-    return I[:n]
+    return I[1 : n + 1]
 
 """
 give some advice
