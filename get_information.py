@@ -39,15 +39,19 @@ class Movie(object):
             self.__director = ['']
         else:
             directors = re.findall(r': (.+)', Director)[0]
+			temp = []
             for d in directors.split('/'):
-                self.__director.append(d.strip())
-
+                temp.append(d.strip())
+			self.__director = temp
+			
         if re.findall(r': (.+)', Starring) == []:
             self.__starring = ['']
         else:
             starrings = re.findall(r': (.+)', Starring)[0]
+			temp = []
             for s in starrings.split('/'):
-                self.__starring.append(s.strip())
+                temp.append(s.strip())
+			self.__starring = temp
 
         self.__reviews = Reviews
         self.__quote = Quote
